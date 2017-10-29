@@ -1,14 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import seaborn as sns
 from sklearn import datasets, preprocessing
 
-iris = datasets.load_iris()
-x = iris.data
-
-# sigma = lambda sigma_0, n, teta: sigma_0 * np.math.exp(-n / teta)
-
-X_normalized = preprocessing.normalize(x, norm='l2')
 
 
 class SOM:
@@ -63,31 +58,55 @@ class SOM:
             j = np.random.randint(0, len(data))
             x = data[j]
             self._one_train(x)
-            if i % 10000 == 0:
+            if i % 5000 == 0:
                 print(i)
-                # self.heatmap()
+                self.heatmap()
 
     def heatmap(self):
+        # TODO: форматирование графиков
+        size = self.w.shape[1]
+        nrows = int(np.sqrt(size)) + 1
+        ncols = int(np.sqrt(size))
+        f, ax = plt.subplots(nrows, ncols)
+        for i, w in enumerate(self.w.transpose()):
+            x = i // nrows
+            y = i - i // ncols * ncols
+            grid = np.reshape(w, (self.dim, self.dim))
+            sns.heatmap(grid, ax=ax[y][x])
         neurons = np.sum(self.w, axis=1)
         grid = np.reshape(neurons, (self.dim, self.dim))
+        plt.figure()
         sns.heatmap(grid)
         plt.show()
 
-    def create_map(self, data):
+    def create_map(self, data, y):
         neurons = np.zeros((self.dim, self.dim))
-        for i in data:
+        annot = np.chararray((self.dim, self.dim), unicode=True)
+        annot[:] = ''
+        for k, i in enumerate(data):
             r = self._win_neuron(i)
             x_coord = r // self.dim
             y_coord = r - r // self.dim * self.dim
             neurons[x_coord][y_coord] += 1
-        sns.heatmap(neurons)
+            annot[x_coord][y_coord] = y[k]
+
+        sns.heatmap(neurons, annot=annot, fmt='')
         plt.show()
 
-dim = 100
+
+iris = datasets.load_iris()
+x = iris.data
+y = iris.target
+
+X_normalized = preprocessing.normalize(x, norm='l2')
+
+
+dim = 25
 s = SOM(4, dim)
 s.training(X_normalized, 10000)
 
-s.create_map(X_normalized)
+
+s.create_map(X_normalized, y=y)
 # c = win_neuron(x_1, w)
 # print(c)
 # coop_dist = dist(c)
