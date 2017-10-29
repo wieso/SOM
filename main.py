@@ -65,7 +65,7 @@ class SOM:
             self._one_train(x)
             if i % 10000 == 0:
                 print(i)
-                self.heatmap()
+                # self.heatmap()
 
     def heatmap(self):
         neurons = np.sum(self.w, axis=1)
@@ -73,12 +73,21 @@ class SOM:
         sns.heatmap(grid)
         plt.show()
 
+    def create_map(self, data):
+        neurons = np.zeros((self.dim, self.dim))
+        for i in data:
+            r = self._win_neuron(i)
+            x_coord = r // self.dim
+            y_coord = r - r // self.dim * self.dim
+            neurons[x_coord][y_coord] += 1
+        sns.heatmap(neurons)
+        plt.show()
 
-s = SOM(4, 50)
-s.training(X_normalized, 20000)
+dim = 100
+s = SOM(4, dim)
+s.training(X_normalized, 10000)
 
-
-
+s.create_map(X_normalized)
 # c = win_neuron(x_1, w)
 # print(c)
 # coop_dist = dist(c)
