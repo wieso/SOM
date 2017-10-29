@@ -65,12 +65,18 @@ class SOM:
             self._one_train(x)
             if i % 10000 == 0:
                 print(i)
-                sns.heatmap(self.w)
-                plt.show()
+                self.heatmap()
+
+    def heatmap(self):
+        neurons = np.sum(self.w, axis=1)
+        grid = np.reshape(neurons, (self.dim, self.dim))
+        sns.heatmap(grid)
+        plt.show()
 
 
 s = SOM(4, 50)
-s.training(X_normalized, 100000)
+s.training(X_normalized, 20000)
+
 
 
 # c = win_neuron(x_1, w)
