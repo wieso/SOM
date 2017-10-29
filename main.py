@@ -93,6 +93,11 @@ class SOM:
         sns.heatmap(neurons, annot=annot, fmt='')
         plt.show()
 
+        weights = np.sum(self.w, axis=1)
+        grid = np.reshape(weights, (self.dim, self.dim))
+        sns.heatmap(grid, annot=annot, fmt='', cmap="hsv")
+        plt.show()
+
 
 iris = datasets.load_iris()
 x = iris.data
@@ -107,9 +112,3 @@ s.training(X_normalized, 10000)
 
 
 s.create_map(X_normalized, y=y)
-# c = win_neuron(x_1, w)
-# print(c)
-# coop_dist = dist(c)
-# t = topol(coop_dist, sigma(1))
-# w = change_weights(x, w, 1, t)
-# print(w)
