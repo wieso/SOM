@@ -3,6 +3,7 @@ import numpy as np
 import seaborn as sns
 from sklearn import datasets, preprocessing
 
+from tqdm import tqdm
 
 
 class SOM:
@@ -52,26 +53,27 @@ class SOM:
         self._change_weights(x, t)
         self.n = self.n + 1
 
-    def training(self, data, max_iteration=10000):
-        for i in range(max_iteration):
+    def training(self, data, max_iteration=10000, show_stage=True, stage_step=5000):
+        for i in tqdm(range(max_iteration)):
             j = np.random.randint(0, len(data))
             x = data[j]
             self._one_train(x)
-            if i % 5000 == 0:
-                print(i)
+            if show_stage and i % stage_step == 0:
                 self.heatmap()
 
     def heatmap(self):
         # TODO: форматирование графиков
         size = self.w.shape[1]
-        nrows = int(np.sqrt(size)) + 1
+        if np.sqrt(size) % 1 == 0:
+            nrows = int(np.sqrt(size))
+        else:
+            nrows = int(np.sqrt(size)) + 1
         ncols = int(np.sqrt(size))
-        f, ax = plt.subplots(nrows, ncols)
-        for i, w in enumerate(self.w.transpose()):
-            x = i // nrows
-            y = i - i // ncols * ncols
+        f, axs = plt.subplots(nrows, ncols)
+        axs = np.array(axs)
+        for ax, w in zip(axs.reshape(-1), self.w.transpose()):
             grid = np.reshape(w, (self.dim, self.dim))
-            sns.heatmap(grid, ax=ax[y][x])
+            sns.heatmap(grid, ax=ax)
         neurons = np.sum(self.w, axis=1)
         grid = np.reshape(neurons, (self.dim, self.dim))
         plt.figure()
@@ -98,16 +100,14 @@ class SOM:
         plt.show()
 
 
-iris = datasets.load_iris()
-x = iris.data
-y = iris.target
-
-X_normalized = preprocessing.normalize(x, norm='l2')
-
-
-dim = 25
-s = SOM(4, dim)
-s.training(X_normalized, 10000)
+def dataset_processing(dataset, dim: int = 25, epoch: int = 10000, **kwargs):
+    x, y = dataset.data, dataset.target
+    x_normalized = preprocessing.normalize(x, norm='l2')
+    s = SOM(len(x_normalized[0]), dim)
+    s.training(x_normalized, max_iteration=epoch, **kwargs)
+    s.create_map(x_normalized, y=y)
 
 
-s.create_map(X_normalized, y=y)
+if __name__ == '__main__':
+    dataset = datasets.load_breast_cancer()
+    dataset_processing(dataset, dim=50, epoch=100000, show_stage=False)
