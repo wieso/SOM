@@ -62,7 +62,6 @@ class SOM:
                 self.heatmap()
 
     def heatmap(self):
-        # TODO: форматирование графиков
         size = self.w.shape[1]
         if np.sqrt(size) % 1 == 0:
             nrows = int(np.sqrt(size))
@@ -81,22 +80,22 @@ class SOM:
         plt.show()
 
     def create_map(self, data, y):
-        neurons = np.zeros((self.dim, self.dim))
-        annot = np.chararray((self.dim, self.dim), unicode=True)
+        classes = set(y)
+        neurons = np.full((self.dim, self.dim), np.nan)
+        annot = np.chararray((self.dim, self.dim), itemsize=len(classes) * 2 - 1, unicode=True)
         annot[:] = ''
         for k, i in enumerate(data):
             r = self._win_neuron(i)
             x_coord = r // self.dim
             y_coord = r - r // self.dim * self.dim
-            neurons[x_coord][y_coord] += 1
-            annot[x_coord][y_coord] = y[k]
+            neurons[x_coord][y_coord] = y[k]
+            point_annot = set(annot[x_coord][y_coord].replace(',', ''))
+            point_annot.add(str(y[k]))
+            annot[x_coord][y_coord] = ','.join(c for c in point_annot)
 
-        sns.heatmap(neurons, annot=annot, fmt='')
-        plt.show()
-
-        weights = np.sum(self.w, axis=1)
-        grid = np.reshape(weights, (self.dim, self.dim))
-        sns.heatmap(grid, annot=annot, fmt='', cmap="hsv")
+        mask = np.isnan(neurons)
+        plt.figure(dpi=300)
+        sns.heatmap(neurons, annot=annot, fmt='', vmin=0, vmax=len(classes) - 1, mask=mask)
         plt.show()
 
 
@@ -110,4 +109,4 @@ def dataset_processing(dataset, dim: int = 25, epoch: int = 10000, **kwargs):
 
 if __name__ == '__main__':
     dataset = datasets.load_breast_cancer()
-    dataset_processing(dataset, dim=50, epoch=100000, show_stage=False)
+    dataset_processing(dataset, dim=80, epoch=10000, show_stage=False)
