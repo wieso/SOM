@@ -94,7 +94,7 @@ class SOM:
             annot[x_coord][y_coord] = ','.join(c for c in point_annot)
 
         mask = np.isnan(neurons)
-        plt.figure(dpi=300)
+        plt.figure(dpi=100)
         sns.heatmap(neurons, annot=annot, fmt='', vmin=0, vmax=len(classes) - 1, mask=mask)
         plt.show()
 
@@ -108,5 +108,40 @@ def dataset_processing(dataset, dim: int = 25, epoch: int = 10000, **kwargs):
 
 
 if __name__ == '__main__':
-    dataset = datasets.load_breast_cancer()
-    dataset_processing(dataset, dim=80, epoch=10000, show_stage=False)
+    models = [
+        {
+            'dataset': datasets.load_iris(),
+            'params': {
+                'dim': 20,
+                'epoch': 100000,
+                'show_stage': False
+            }
+        },
+        {
+            'dataset': datasets.load_breast_cancer(),
+            'params': {
+                'dim': 100,
+                'epoch': 10000,
+                'show_stage': False
+            }
+        },
+        {
+            'dataset': datasets.load_digits(),
+            'params': {
+                'dim': 40,
+                'epoch': 10000,
+                'show_stage': False
+            }
+        },
+        {
+            'dataset': datasets.load_wine(),
+            'params': {
+                'dim': 25,
+                'epoch': 100000,
+                'show_stage': False
+            }
+        },
+    ]
+
+    for m in models:
+        dataset_processing(m['dataset'], **m['params'])
