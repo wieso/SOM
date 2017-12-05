@@ -5,7 +5,7 @@ from sklearn import datasets, preprocessing
 
 from tqdm import tqdm
 
-from multiprocessing import Process
+import concurrent.futures
 
 
 class SOM:
@@ -114,7 +114,7 @@ if __name__ == '__main__':
         {
             'dataset': datasets.load_iris(),
             'dim': 25,
-            'epoch': 500000
+            'epoch': 100000
         },
         {
             'dataset': datasets.load_breast_cancer(),
@@ -124,7 +124,7 @@ if __name__ == '__main__':
         {
             'dataset': datasets.load_digits(),  # Очень долго считается
             'dim': 40,
-            'epoch': 500000
+            'epoch': 10000
         },
         {
             'dataset': datasets.load_wine(),
@@ -133,6 +133,6 @@ if __name__ == '__main__':
         },
     ]
 
-    for m in models:
-        p = Process(target=dataset_processing, args=m.values())
-        p.start()
+    with concurrent.futures.ProcessPoolExecutor(max_workers=2) as e:
+        for m in models:
+            e.submit(dataset_processing, **m)
