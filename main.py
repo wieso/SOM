@@ -99,9 +99,13 @@ class SOM:
         non_class = np.where(neurons == -1)
         neurons[non_class] = np.nan
         annot[non_class] = np.nan
-        mask = np.isnan(neurons)
+
+
+        notnan_index = np.where(np.isfinite(neurons))
+        notnan_neurons = neurons[notnan_index]
         plt.figure(dpi=100)
-        sns.heatmap(neurons, annot=annot, fmt='', vmin=0, vmax=len(classes) - 1, mask=mask)
+        plt.hexbin(notnan_index[0], notnan_index[1], notnan_neurons, gridsize=self.dim)
+
         plt.show()
 
 
