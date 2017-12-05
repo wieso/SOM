@@ -90,11 +90,15 @@ class SOM:
             r = self._win_neuron(i)
             x_coord = r // self.dim
             y_coord = r - r // self.dim * self.dim
-            neurons[x_coord][y_coord] = y[k]
-            point_annot = set(annot[x_coord][y_coord].replace(',', ''))
-            point_annot.add(str(y[k]))
-            annot[x_coord][y_coord] = ','.join(c for c in point_annot)
-
+            if np.isnan(neurons[x_coord][y_coord]):
+                neurons[x_coord][y_coord] = y[k]
+                annot[x_coord][y_coord] = y[k]
+            else:
+                neurons[x_coord][y_coord] = -1
+                annot[x_coord][y_coord] = -1
+        non_class = np.where(neurons == -1)
+        neurons[non_class] = np.nan
+        annot[non_class] = np.nan
         mask = np.isnan(neurons)
         plt.figure(dpi=100)
         sns.heatmap(neurons, annot=annot, fmt='', vmin=0, vmax=len(classes) - 1, mask=mask)
