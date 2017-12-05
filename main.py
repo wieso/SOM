@@ -101,7 +101,7 @@ class SOM:
         plt.show()
 
 
-def dataset_processing(dataset=[], dim: int = 25, epoch: int = 10000, **kwargs):
+def dataset_processing(dataset, dim: int = 25, epoch: int = 10000, **kwargs):
     x, y = dataset.data, dataset.target
     x_normalized = preprocessing.normalize(x, norm='l2')
     s = SOM(len(x_normalized[0]), dim)
@@ -122,9 +122,9 @@ if __name__ == '__main__':
             'epoch': 100000
         },
         {
-            'dataset': datasets.load_digits(),
-            'dim': 50,
-            'epoch': 600000
+            'dataset': datasets.load_digits(),  # Очень долго считается
+            'dim': 40,
+            'epoch': 500000
         },
         {
             'dataset': datasets.load_wine(),
