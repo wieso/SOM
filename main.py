@@ -5,6 +5,8 @@ from sklearn import datasets, preprocessing
 
 from tqdm import tqdm
 
+from multiprocessing import Process
+
 
 class SOM:
     def __init__(self, input_dim, dim=10, sigma=None, learning_rate=0.1, tay2=1000):
@@ -53,7 +55,7 @@ class SOM:
         self._change_weights(x, t)
         self.n = self.n + 1
 
-    def training(self, data, max_iteration=10000, show_stage=True, stage_step=5000):
+    def training(self, data, max_iteration=10000, show_stage=False, stage_step=5000):
         for i in tqdm(range(max_iteration)):
             j = np.random.randint(0, len(data))
             x = data[j]
@@ -99,7 +101,7 @@ class SOM:
         plt.show()
 
 
-def dataset_processing(dataset, dim: int = 25, epoch: int = 10000, **kwargs):
+def dataset_processing(dataset=[], dim: int = 25, epoch: int = 10000, **kwargs):
     x, y = dataset.data, dataset.target
     x_normalized = preprocessing.normalize(x, norm='l2')
     s = SOM(len(x_normalized[0]), dim)
@@ -111,37 +113,26 @@ if __name__ == '__main__':
     models = [
         {
             'dataset': datasets.load_iris(),
-            'params': {
-                'dim': 20,
-                'epoch': 100000,
-                'show_stage': False
-            }
+            'dim': 25,
+            'epoch': 500000
         },
         {
             'dataset': datasets.load_breast_cancer(),
-            'params': {
-                'dim': 100,
-                'epoch': 10000,
-                'show_stage': False
-            }
+            'dim': 50,
+            'epoch': 100000
         },
         {
             'dataset': datasets.load_digits(),
-            'params': {
-                'dim': 40,
-                'epoch': 10000,
-                'show_stage': False
-            }
+            'dim': 50,
+            'epoch': 600000
         },
         {
             'dataset': datasets.load_wine(),
-            'params': {
-                'dim': 25,
-                'epoch': 100000,
-                'show_stage': False
-            }
+            'dim': 30,
+            'epoch': 1000000
         },
     ]
 
     for m in models:
-        dataset_processing(m['dataset'], **m['params'])
+        p = Process(target=dataset_processing, args=m.values())
+        p.start()
