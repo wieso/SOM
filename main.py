@@ -122,12 +122,12 @@ if __name__ == '__main__':
         {
             'dataset': datasets.load_iris(),
             'dim': 25,
-            'epoch': 100000
+            'epoch': 10000
         },
         {
             'dataset': datasets.load_breast_cancer(),
             'dim': 50,
-            'epoch': 100000
+            'epoch': 10000
         },
         {
             'dataset': datasets.load_digits(),  # Очень долго считается
@@ -137,10 +137,8 @@ if __name__ == '__main__':
         {
             'dataset': datasets.load_wine(),
             'dim': 30,
-            'epoch': 1000000
+            'epoch': 10000
         },
     ]
-
-    with concurrent.futures.ProcessPoolExecutor(max_workers=2) as e:
-        for m in models:
-            e.submit(dataset_processing, **m)
+    for m in models:
+        dataset_processing(**m)
