@@ -1,11 +1,10 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
-from sklearn import datasets, preprocessing
+from sklearn import datasets, preprocessing, feature_selection
+from sklearn.decomposition import PCA
 
 from tqdm import tqdm
-
-import concurrent.futures
 
 
 class SOM:
@@ -100,7 +99,6 @@ class SOM:
         neurons[non_class] = np.nan
         annot[non_class] = np.nan
 
-
         notnan_index = np.where(np.isfinite(neurons))
         notnan_neurons = neurons[notnan_index]
         plt.figure(dpi=100)
@@ -109,12 +107,16 @@ class SOM:
         plt.show()
 
 
-def dataset_processing(dataset, dim: int = 25, epoch: int = 10000, **kwargs):
+def dataset_processing(dataset, dim: int = 40, epoch: int = 1000, **kwargs):
     x, y = dataset.data, dataset.target
     x_normalized = preprocessing.normalize(x, norm='l2')
-    s = SOM(len(x_normalized[0]), dim)
-    s.training(x_normalized, max_iteration=epoch, **kwargs)
-    s.create_map(x_normalized, y=y)
+
+    pca = PCA(n_components=5)
+    X_pca = pca.fit_transform(x_normalized)
+
+    s = SOM(len(X_pca[0]), dim)
+    s.training(X_pca, max_iteration=epoch, **kwargs)
+    s.create_map(X_pca, y=y)
 
 
 if __name__ == '__main__':
@@ -136,9 +138,9 @@ if __name__ == '__main__':
         },
         {
             'dataset': datasets.load_wine(),
-            'dim': 30,
+            'dim': 40,
             'epoch': 10000
         },
     ]
-    for m in models:
-        dataset_processing(**m)
+    # for m in models[-1]:
+    dataset_processing(**models[-1])
