@@ -3,6 +3,7 @@ import numpy as np
 import seaborn as sns
 from sklearn import datasets, preprocessing, feature_selection
 from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
 
 from tqdm import tqdm
 
@@ -111,7 +112,8 @@ def dataset_processing(dataset, dim: int = 40, epoch: int = 1000, **kwargs):
     x, y = dataset.data, dataset.target
     x_normalized = preprocessing.normalize(x, norm='l2')
 
-    pca = PCA(n_components=5)
+    x_normalized = StandardScaler().fit_transform(x)
+    pca = PCA(n_components=8)
     X_pca = pca.fit_transform(x_normalized)
 
     s = SOM(len(X_pca[0]), dim)
@@ -139,7 +141,7 @@ if __name__ == '__main__':
         {
             'dataset': datasets.load_wine(),
             'dim': 40,
-            'epoch': 10000
+            'epoch': 100000
         },
     ]
     # for m in models[-1]:
