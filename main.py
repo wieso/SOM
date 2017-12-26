@@ -121,7 +121,7 @@ def dataset_processing(dataset, dim: int = 40, epoch: int = 1000, **kwargs):
     s.create_map(X_pca, y=y)
 
 
-if __name__ == '__main__':
+def main():
     models = [
         {
             'dataset': datasets.load_iris(),
@@ -146,3 +146,7 @@ if __name__ == '__main__':
     ]
     # for m in models[-1]:
     dataset_processing(**models[-1])
+
+
+if __name__ == '__main__':
+    main()
