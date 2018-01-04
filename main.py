@@ -57,11 +57,11 @@ class SOM:
 
     def training(self, data, max_iteration=10000, show_stage=False, stage_step=5000):
         for i in tqdm(range(max_iteration)):
-            j = np.random.randint(0, len(data))
-            x = data[j]
-            self._one_train(x)
-            if show_stage and i % stage_step == 0:
-                self.heatmap()
+            for j in range(0, len(data)):
+                x = data[j]
+                self._one_train(x)
+                if show_stage and i % stage_step == 0:
+                    self.heatmap()
 
     def heatmap(self):
         size = self.w.shape[1]
@@ -135,8 +135,8 @@ def main():
         },
         {
             'dataset': datasets.load_digits(),  # Очень долго считается
-            'dim': 40,
-            'epoch': 10000
+            'dim': 43,
+            'epoch': 400
         },
         {
             'dataset': datasets.load_wine(),
@@ -145,7 +145,7 @@ def main():
         },
     ]
     # for m in models[-1]:
-    dataset_processing(**models[-1])
+    dataset_processing(**models[-2])
 
 
 if __name__ == '__main__':
